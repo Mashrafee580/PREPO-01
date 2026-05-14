@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Marketplace — PaperTrail</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="responsive.css" />
+    <link rel="stylesheet" href="marketplace.css" />
+</head>
+
+<body>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container top-header">
+            <div class="logo"><a href="index.html">PaperTrail</a></div>
+            <form class="search-form" onsubmit="return false;">
+                <input type="text" id="mpSearch" placeholder="Search books, authors, ISBN..." autocomplete="off" />
+                <button type="submit" onclick="filterListings()">Search</button>
+            </form>
+            <div class="user-actions">
+                <a href="index.html">← Back to Store</a>
+                <a href="#">Login</a>
+                <a href="#" class="cart-icon-btn">🛒 Cart <span class="cart-count">0</span></a>
+            </div>
+        </div>
+        <nav class="bottom-navbar">
+            <div class="container navbar-inner">
+                <ul style="display:flex;">
+                    <li><a href="index.html#home">Home</a></li>
+                    <li><a href="index.html#allBooks">All Books</a></li>
+                    <li><a href="index.html#deals">Deals</a></li>
+                    <li><a href="marketplace.html" class="nav-active">Marketplace</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="mp-hero">
+        <div class="container mp-hero-inner">
+            <div class="mp-hero-text">
+                <h1>Book Marketplace</h1>
+                <p>Buy and sell pre-loved books directly with fellow readers.<br>Set your price, list in seconds,
+                    connect instantly.</p>
+                <button class="mp-hero-btn" onclick="openListModal()">+ List a Book</button>
+            </div>
+            <div class="mp-hero-stats">
+                <div class="mp-stat"><span>1,240+</span>
+                    <p>Books Listed</p>
+                </div>
+                <div class="mp-stat"><span>860+</span>
+                    <p>Happy Sellers</p>
+                </div>
+                <div class="mp-stat"><span>4.8★</span>
+                    <p>Avg. Rating</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters Bar -->
+    <section class="mp-filters-bar">
+        <div class="container mp-filters-inner">
+            <div class="mp-filter-group">
+                <label>Category</label>
+                <select id="filterGenre" onchange="filterListings()">
+                    <option value="">All Genres</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Science Fiction">Science Fiction</option>
+                    <option value="Mystery">Mystery</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Classic">Classic</option>
+                    <option value="Thriller">Thriller</option>
+                </select>
+            </div>
+            <div class="mp-filter-group">
+                <label>Condition</label>
+                <select id="filterCondition" onchange="filterListings()">
+                    <option value="">Any Condition</option>
+                    <option value="New">New</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                </select>
+            </div>
+            <div class="mp-filter-group">
+                <label>Max Price ($)</label>
+                <input type="number" id="filterPrice" placeholder="e.g. 20" min="0" oninput="filterListings()" />
+            </div>
+            <div class="mp-filter-group">
+                <label>Sort By</label>
+                <select id="filterSort" onchange="filterListings()">
+                    <option value="newest">Newest First</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                </select>
+            </div>
+            <div class="mp-filter-tabs">
+                <button class="mp-tab active" id="tabAll" onclick="setTab('all')">All Listings</button>
+                <button class="mp-tab" id="tabSell" onclick="setTab('sell')">Want to Sell</button>
+                <button class="mp-tab" id="tabBuy" onclick="setTab('buy')">Want to Buy</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Listings Grid -->
+    <main class="mp-main">
+        <div class="container">
+            <div id="listingsGrid" class="mp-grid"></div>
+            <p id="noResults" class="mp-no-results" style="display:none;">No listings match your filters.</p>
+        </div>
+    </main>
+
+    <!-- List a Book Modal -->
+    <div id="listModal" class="modal-overlay">
+        <div class="modal-box mp-list-box">
+            <button class="modal-close" onclick="closeListModal()">&times;</button>
+            <h2>List Your Book</h2>
+            <p class="mp-list-sub">Fill in the details and reach thousands of readers</p>
+            <form id="listForm" class="mp-list-form" onsubmit="return false;">
+                <div class="mp-form-row">
+                    <div class="mp-form-group">
+                        <label>Book Title *</label>
+                        <input type="text" id="lTitle" placeholder="e.g. The Great Gatsby" required />
+                    </div>
+                    <div class="mp-form-group">
+                        <label>Author *</label>
+                        <input type="text" id="lAuthor" placeholder="e.g. F. Scott Fitzgerald" required />
+                    </div>
+                </div>
+                <div class="mp-form-row">
+                    <div class="mp-form-group">
+                        <label>Genre</label>
+                        <select id="lGenre">
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Science Fiction">Science Fiction</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Classic">Classic</option>
+                            <option value="Thriller">Thriller</option>
+                        </select>
+                    </div>
+                    <div class="mp-form-group">
+                        <label>Condition *</label>
+                        <select id="lCondition">
+                            <option value="New">New</option>
+                            <option value="Like New">Like New</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mp-form-row">
+                    <div class="mp-form-group">
+                        <label>Your Price ($) *</label>
+                        <input type="number" id="lPrice" placeholder="e.g. 8.99" min="0" step="0.01" required />
+                    </div>
+                    <div class="mp-form-group">
+                        <label>Listing Type</label>
+                        <select id="lType">
+                            <option value="sell">Want to Sell</option>
+                            <option value="buy">Want to Buy</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mp-form-group mp-form-full">
+                    <label>Description</label>
+                    <textarea id="lDesc" rows="3"
+                        placeholder="Describe the book's condition, edition, any notes..."></textarea>
+                </div>
+                <div class="mp-form-group mp-form-full">
+                    <label>Seller Name *</label>
+                    <input type="text" id="lSeller" placeholder="Your display name" required />
+                </div>
+                <button type="button" class="mp-submit-btn" onclick="submitListing()">Publish Listing</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Seller Modal -->
+    <div id="contactModal" class="modal-overlay">
+        <div class="modal-box mp-contact-box">
+            <button class="modal-close" onclick="closeContactModal()">&times;</button>
+            <h2 id="contactTitle">Contact Seller</h2>
+            <p class="mp-list-sub" id="contactSub"></p>
+            <form class="mp-list-form" onsubmit="return false;">
+                <div class="mp-form-group mp-form-full">
+                    <label>Your Name *</label>
+                    <input type="text" id="cName" placeholder="Your name" />
+                </div>
+                <div class="mp-form-group mp-form-full">
+                    <label>Your Email *</label>
+                    <input type="email" id="cEmail" placeholder="your@email.com" />
+                </div>
+                <div class="mp-form-group mp-form-full">
+                    <label>Message *</label>
+                    <textarea id="cMsg" rows="4" placeholder="Hi, I'm interested in your book..."></textarea>
+                </div>
+                <button type="button" class="mp-submit-btn" onclick="sendContact()">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer-section" style="margin-top:3em;">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3>PaperTrail</h3>
+                    <p>Your friendly online bookstore</p>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#home">Home</a></li>
+                        <li><a href="index.html#allBooks">Books</a></li>
+                        <li><a href="marketplace.html">Marketplace</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <p>Email: support@papertrail.com</p>
+                    <p>Phone: +880140451914</p>
+                </div>
+                <div>
+                    <h4>Follow Us</h4><a href="#">Instagram</a> | <a href="#">Twitter</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2025 PaperTrail. All rights reserved.</div>
+    </footer>
+
+    <script src="backend/api.js"></script>
+    <script src="marketplace.js"></script>
+</body>
+
+</html>

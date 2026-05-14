@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PaperTrail</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <link rel="stylesheet" href="https://unpkg.com/swiper@9/swiper-bundle.min.css" />
+</head>
+
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Header -->
+  <header class="main-header">
+    <div class="container top-header">
+      <a href="https://www.youtube.com/" target="_blank">
+        <h1 class="logo">PaperTrail</h1>
+      </a>
+      <form class="search-form" onsubmit="return false;">
+        <input type="text" id="searchInput" placeholder="Search books, authors..." autocomplete="off" />
+        <button type="submit" onclick="handleSearch()">Search</button>
+      </form>
+      <div class="user-actions">
+        <a href="#">Login</a>
+        <a href="#">Register</a>
+        <a href="#" id="cartBtn" class="cart-icon-btn">
+          🛒 Cart <span id="cartCount" class="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+    <nav class="bottom-navbar" id="navbar">
+      <div class="container navbar-inner">
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
+        <ul id="navMenu">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#allBooks">All Books</a></li>
+          <li><a href="#newArrivals">New Arrivals</a></li>
+          <li><a href="#latestAdditions">Latest Additions</a></li>
+          <li><a href="#deals">Deals</a></li>
+          <li><a href="#marketplace">Marketplace</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Cart Sidebar -->
+  <div id="cartOverlay" class="cart-overlay"></div>
+  <div id="cartSidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <h3>Your Cart</h3>
+      <button id="cartClose" class="cart-close">&times;</button>
+    </div>
+    <div id="cartItems" class="cart-items"></div>
+    <div id="cartDeliverySection" class="cart-delivery-section" style="display:none;">
+      <h4>Delivery Options</h4>
+      <div id="cartDeliveryOptions"></div>
+    </div>
+    <div class="cart-totals">
+      <div class="cart-totals-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+      <div class="cart-totals-row"><span>Delivery</span><span id="cartDeliveryCharge">$3.99</span></div>
+      <div class="cart-totals-row cart-total-final"><span>Total</span><span id="cartTotal">$0.00</span></div>
+    </div>
+    <button id="checkoutBtn" class="checkout-btn">Proceed to Checkout</button>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div id="productModal" class="modal-overlay">
+    <div class="modal-box">
+      <button id="modalClose" class="modal-close">&times;</button>
+      <div class="modal-content">
+        <img id="modalImg" src="" alt="" class="modal-img" />
+        <div class="modal-info">
+          <h2 id="modalTitle"></h2>
+          <p id="modalAuthor" class="modal-author"></p>
+          <span id="modalGenre" class="modal-genre"></span>
+          <p id="modalDesc" class="modal-desc"></p>
+          <p id="modalPrice" class="modal-price"></p>
+          <div class="modal-actions">
+            <button id="modalCartBtn" data-id="">Add to Cart</button>
+            <button id="modalBuyBtn" data-id="">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="modal-overlay">
+    <div class="modal-box checkout-box">
+      <button id="checkoutModalClose" class="modal-close">&times;</button>
+      <h2>Checkout</h2>
+      <div class="checkout-layout">
+        <div class="checkout-summary">
+          <h4>Order Summary</h4>
+          <div id="coItems"></div>
+          <div class="co-totals">
+            <div class="co-row"><span>Subtotal</span><span id="coSubtotal"></span></div>
+            <div class="co-row"><span>Delivery</span><span id="coDelivery"></span></div>
+            <div class="co-row co-total-final"><span>Total</span><span id="coTotal"></span></div>
+          </div>
+        </div>
+        <form id="checkoutForm" class="checkout-form" onsubmit="return false;">
+          <h4>Shipping Details</h4>
+          <input type="text" id="coName" placeholder="Full Name *" />
+          <input type="email" id="coEmail" placeholder="Email Address *" />
+          <input type="tel" id="coPhone" placeholder="Phone Number *" />
+          <input type="text" id="coAddress" placeholder="Street Address *" />
+          <input type="text" id="coCity" placeholder="City *" />
+          <input type="text" id="coZip" placeholder="ZIP / Postal Code *" />
+          <button type="button" id="placeOrderBtn" class="place-order-btn">Place Order</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Success Modal -->
+  <div id="orderSuccessModal" class="modal-overlay">
+    <div class="modal-box success-box">
+      <div class="success-icon">&#10003;</div>
+      <h2>Order Placed!</h2>
+      <p>Thank you, <strong id="orderSuccessName"></strong>! Your order has been placed successfully.</p>
+      <p>You will receive a confirmation email shortly.</p>
+      <button id="continueShopping">Continue Shopping</button>
+      <button id="orderSuccessClose" class="modal-close-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Membership Plans Modal -->
+  <div id="membershipModal" class="modal-overlay">
+    <div class="modal-box membership-modal-box">
+      <div class="membership-modal-header">
+        <button id="membershipModalClose" class="modal-close">&times;</button>
+        <h2>Choose Your Plan</h2>
+        <p>Unlock exclusive benefits and save more on every purchase</p>
+      </div>
+      <div class="membership-plans-wrap">
+        <div class="membership-plans">
+          <!-- Free Plan -->
+          <div class="plan-card">
+            <div class="plan-badge">Free</div>
+            <h3>Basic</h3>
+            <div class="plan-price">
+              <span class="price">$0</span>
+              <span class="period">/month</span>
+            </div>
+            <ul class="plan-features">
+              <li><span class="check">✓</span> Browse all books</li>
+              <li><span class="check">✓</span> Standard delivery</li>
+              <li><span class="check">✓</span> Email support</li>
+              <li><span class="cross">✗</span> Member discounts</li>
+              <li><span class="cross">✗</span> Early access</li>
+              <li><span class="cross">✗</span> Free shipping</li>
+            </ul>
+            <button class="plan-btn plan-btn-free" onclick="selectPlan('free')">Current Plan</button>
+          </div>
+          <!-- Premium Plan -->
+          <div class="plan-card plan-card-featured">
+            <div class="plan-badge plan-badge-featured">Most Popular</div>
+            <h3>Premium</h3>
+            <div class="plan-price">
+              <span class="price">$9.99</span>
+              <span class="period">/month</span>
+            </div>
+            <ul class="plan-features">
+              <li><span class="check">✓</span> Everything in Basic</li>
+              <li><span class="check">✓</span> 10% off all purchases</li>
+              <li><span class="check">✓</span> Free standard shipping</li>
+              <li><span class="check">✓</span> Early access to sales</li>
+              <li><span class="check">✓</span> Priority support</li>
+              <li><span class="cross">✗</span> Exclusive releases</li>
+            </ul>
+            <button class="plan-btn plan-btn-premium" onclick="selectPlan('premium')">Choose Premium</button>
+          </div>
+          <!-- VIP Plan -->
+          <div class="plan-card">
+            <div class="plan-badge plan-badge-vip">VIP</div>
+            <h3>Ultimate</h3>
+            <div class="plan-price">
+              <span class="price">$19.99</span>
+              <span class="period">/month</span>
+            </div>
+            <ul class="plan-features">
+              <li><span class="check">✓</span> Everything in Premium</li>
+              <li><span class="check">✓</span> 20% off all purchases</li>
+              <li><span class="check">✓</span> Free express shipping</li>
+              <li><span class="check">✓</span> Exclusive book releases</li>
+              <li><span class="check">✓</span> Personal recommendations</li>
+              <li><span class="check">✓</span> VIP customer service</li>
+            </ul>
+            <button class="plan-btn plan-btn-vip" onclick="selectPlan('vip')">Choose Ultimate</button>
+          </div>
+        </div>
+      </div>
+      <div class="membership-modal-footer">
+        <p>🔒 Secure payment &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No hidden fees</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home Section — full bleed hero, no container -->
+  <section id="home" class="home">
+    <div class="book-slider swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide hero-slide" style="background-image: url('./images/img1.jpg')"></div>
+        <div class="swiper-slide hero-slide" style="background-image: url('./images/img2.jpg')"></div>
+        <div class="swiper-slide hero-slide" style="background-image: url('./images/img3.jpg')"></div>
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-prev hero-prev"></div>
+      <div class="swiper-button-next hero-next"></div>
+      <div class="hero-overlay">
+        <h1>Welcome to PaperTrail</h1>
+        <p>Where every page leads somewhere new</p>
+        <a href="#allBooks" class="hero-cta">Browse Books</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Icons Section -->
+  <section class="icons-section">
+    <div class="container">
+      <div class="icons-grid">
+        <div class="icon-card">
+          <img src="https://img.icons8.com/color/96/000000/book--v2.png" alt="Wide Selection" />
+          <p>Wide Selection</p>
+        </div>
+        <div class="icon-card">
+          <img src="https://img.icons8.com/color/96/000000/purchase-order.png" alt="Easy Purchase" />
+          <p>Easy Purchase</p>
+        </div>
+        <div class="icon-card">
+          <img src="https://img.icons8.com/color/96/000000/shipped.png" alt="Fast Delivery" />
+          <p>Fast Delivery</p>
+        </div>
+        <div class="icon-card">
+          <img src="https://img.icons8.com/color/96/000000/market-square.png" alt="Marketplace" />
+          <p>Marketplace</p>
+        </div>
+        <div class="icon-card">
+          <img src="https://img.icons8.com/color/96/000000/membership-card.png" alt="Membership" />
+          <p>Membership</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- All Books Section -->
+  <section id="allBooks" class="card-section">
+    <div class="container">
+      <h2>All Books</h2>
+      <div class="swiper book-card-slider">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide card" data-id="1">
+            <img src="https://covers.openlibrary.org/b/id/8231856-L.jpg" alt="The Great Gatsby" />
+            <h3>The Great Gatsby</h3>
+            <p>$14.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="1">Add to Cart</button>
+              <button class="btn-buy" data-id="1">Buy Now</button>
+            </div>
+          </div>
+          <div class="swiper-slide card" data-id="2">
+            <img src="https://covers.openlibrary.org/b/id/8091016-L.jpg" alt="To Kill a Mockingbird" />
+            <h3>To Kill a Mockingbird</h3>
+            <p>$12.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="2">Add to Cart</button>
+              <button class="btn-buy" data-id="2">Buy Now</button>
+            </div>
+          </div>
+          <div class="swiper-slide card" data-id="3">
+            <img src="https://covers.openlibrary.org/b/id/8235110-L.jpg" alt="1984" />
+            <h3>1984</h3>
+            <p>$11.49</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="3">Add to Cart</button>
+              <button class="btn-buy" data-id="3">Buy Now</button>
+            </div>
+          </div>
+          <div class="swiper-slide card" data-id="4">
+            <img src="https://covers.openlibrary.org/b/id/8228691-L.jpg" alt="Pride & Prejudice" />
+            <h3>Pride &amp; Prejudice</h3>
+            <p>$9.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="4">Add to Cart</button>
+              <button class="btn-buy" data-id="4">Buy Now</button>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Arrivals Section -->
+  <section id="newArrivals" class="card-section">
+    <div class="container">
+      <h2>New Arrivals</h2>
+      <div class="swiper new-arrivals-slider">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide card" data-id="5">
+            <img src="https://covers.openlibrary.org/b/id/8281993-L.jpg" alt="The Silent Patient" />
+            <h3>The Silent Patient</h3>
+            <p>$16.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="5">Add to Cart</button>
+              <button class="btn-buy" data-id="5">Buy Now</button>
+            </div>
+          </div>
+          <div class="swiper-slide card" data-id="6">
+            <img src="https://covers.openlibrary.org/b/id/8250995-L.jpg" alt="Where The Crawdads Sing" />
+            <h3>Where The Crawdads Sing</h3>
+            <p>$13.49</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="6">Add to Cart</button>
+              <button class="btn-buy" data-id="6">Buy Now</button>
+            </div>
+          </div>
+          <div class="swiper-slide card" data-id="7">
+            <img src="https://covers.openlibrary.org/b/id/8226193-L.jpg" alt="The Guest List" />
+            <h3>The Guest List</h3>
+            <p>$15.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="7">Add to Cart</button>
+              <button class="btn-buy" data-id="7">Buy Now</button>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Additions Section -->
+  <section id="latestAdditions" class="card-section">
+    <div class="container">
+      <h2>Latest Additions</h2>
+      <div class="swiper latest-additions-slider">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide card" data-id="8">
+            <img src="https://covers.openlibrary.org/b/id/8250634-L.jpg" alt="The Midnight Library" />
+            <h3>The Midnight Library</h3>
+            <p>$12.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="8">Add to Cart</button>
+              <button class="btn-buy" data-id="8">Buy Now</button>
+            </div>
+          </div>
+          <div class="swiper-slide card" data-id="9">
+            <img src="https://covers.openlibrary.org/b/id/8255099-L.jpg" alt="Project Hail Mary" />
+            <h3>Project Hail Mary</h3>
+            <p>$17.99</p>
+            <div class="card-btns">
+              <button class="btn-cart" data-id="9">Add to Cart</button>
+              <button class="btn-buy" data-id="9">Buy Now</button>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deals Section — full bleed parallax, container inside overlay -->
+  <section id="deals" class="deals-section parallax-bg">
+    <div class="overlay">
+      <div class="container">
+        <h2>Hot Deals</h2>
+        <div class="deals-grid">
+          <div class="deal-card">
+            <div class="deal-badge">🔥</div>
+            <h3>Buy 2 Get 1 Free</h3>
+            <p>On all Fiction Books this week only!</p>
+            <button>Shop Now</button>
+          </div>
+          <div class="deal-card">
+            <div class="deal-badge">⚡</div>
+            <h3>Weekend Sale</h3>
+            <p>Up to 50% Off Bestsellers every weekend</p>
+            <button>See All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Offer Cards Section -->
+  <section class="offer-section">
+    <div class="container">
+      <h2>Exclusive Offers</h2>
+      <div class="offers-grid">
+        <div class="offer-card">
+          <div class="offer-icon">🏷️</div>
+          <h3>Member Discount</h3>
+          <p>Extra 10% OFF for members on every order</p>
+        </div>
+        <div class="offer-card">
+          <div class="offer-icon">🛍️</div>
+          <h3>Marketplace Seller Fee</h3>
+          <p>List your books — first month completely free!</p>
+        </div>
+        <div class="offer-card">
+          <div class="offer-icon">🎁</div>
+          <h3>Refer a Friend</h3>
+          <p>Earn $5 credit for every friend who joins</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Membership & Marketplace Section -->
+  <section class="info-section-wrap">
+    <div class="container">
+      <div class="info-sections">
+        <div class="membership">
+          <h2>Membership</h2>
+          <p>Join our club and get exclusive deals, member-only discounts, early access to new arrivals, and more!</p>
+          <button>Become a Member</button>
+        </div>
+        <div id="marketplace" class="marketplace-access">
+          <h2>Marketplace</h2>
+          <p>Buy &amp; sell books with fellow readers! List your book, set your price, and connect with buyers directly.
+          </p>
+          <button onclick="window.location.href='marketplace.html'">Access Marketplace</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="footer-section">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h3>PaperTrail</h3>
+          <p>Your friendly online bookstore</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#allBooks">Books</a></li>
+            <li><a href="#marketplace">Marketplace</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>Email: support@papertrail.com</p>
+          <p>Phone: +880140451914</p>
+        </div>
+        <div>
+          <h4>Follow Us</h4>
+          <a href="#">Instagram</a> |
+          <a href="#">Twitter</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 PaperTrail. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/swiper@9/swiper-bundle.min.js"></script>
+  <script src="backend/api.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

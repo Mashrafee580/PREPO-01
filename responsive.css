@@ -1,0 +1,232 @@
+/* ============================================================
+   responsive.css — PaperTrail
+   Breakpoints:
+     lg  : 1024px   (laptop / small desktop)
+     md  : 768px    (tablet portrait)
+     sm  : 480px    (large phone)
+     xs  : 360px    (small phone)
+   ============================================================ */
+
+/* ── Hamburger button — hidden on desktop ── */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #0a79da;
+  cursor: pointer;
+  padding: 0.3em 0.5em;
+  line-height: 1;
+  margin-left: auto;
+}
+.nav-toggle:hover { background: none; color: #005fa3; }
+.nav-toggle.active { color: #e74c3c; }
+
+/* ── Disable fixed parallax on touch (iOS bug) ── */
+@media (hover: none) {
+  .deals-section.parallax-bg {
+    background-attachment: scroll;
+  }
+}
+
+/* ============================================================
+   LG — 1024px and below
+   ============================================================ */
+@media (max-width: 1024px) {
+  .book-slider { height: 460px; }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+}
+
+/* ============================================================
+   MD — 768px and below  (tablet)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Container tighter padding on tablet */
+  .container { padding: 0 16px; }
+
+  /* Header */
+  .top-header {
+    gap: 8px;
+  }
+
+  .logo { font-size: 1.4em; }
+
+  .search-form {
+    order: 3;
+    flex: 1 1 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .user-actions { gap: 6px; }
+  .user-actions a { margin-left: 8px; font-size: 0.9em; }
+
+  /* Hamburger */
+  .nav-toggle { display: block; }
+
+  .navbar-inner { position: relative; }
+
+  .bottom-navbar ul {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    background: #fdfdfd;
+    border-top: 1px solid #e0e8f0;
+    /* stretch full width below the container */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .bottom-navbar ul.open { display: flex; }
+
+  .bottom-navbar li a {
+    display: block;
+    padding: 0.85em 1.4em;
+    border-radius: 0;
+    border-bottom: 1px solid #f0f4f8;
+    font-size: 0.97em;
+  }
+
+  /* Hero */
+  .book-slider { height: 380px; }
+  .hero-overlay h1 { font-size: 1.7rem; }
+  .hero-overlay p  { font-size: 0.97rem; margin-bottom: 1em; }
+  .hero-cta { padding: 0.6em 1.6em; font-size: 0.95rem; }
+
+  /* Icons */
+  .icons-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  /* Cards */
+  .swiper .card { max-width: 180px; }
+  .swiper .card img { width: 90px; height: 130px; }
+
+  /* Deals */
+  .deals-section.parallax-bg { min-height: 280px; }
+  .deals-grid { gap: 20px; }
+  .deal-card { width: 240px; padding: 2em 1.5em; }
+
+  /* Offers */
+  .offers-grid { grid-template-columns: 1fr; gap: 16px; }
+
+  /* Info */
+  .info-sections { grid-template-columns: 1fr; gap: 20px; }
+
+  /* Membership modal */
+  .membership-plans { grid-template-columns: 1fr; gap: 16px; }
+  .plan-card-featured { transform: none; }
+  .plan-card-featured:hover { transform: translateY(-5px); }
+  .membership-plans-wrap { padding: 1.4em 1.2em 0; }
+  .membership-modal-footer { padding: 1.2em 1.2em 1.4em; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+  /* Modals */
+  .modal-box { padding: 1.5em; }
+  .checkout-layout { grid-template-columns: 1fr; gap: 1.2em; }
+}
+
+/* ============================================================
+   SM — 480px and below  (phone)
+   ============================================================ */
+@media (max-width: 480px) {
+
+  .container { padding: 0 12px; }
+
+  /* Header */
+  .logo { font-size: 1.2em; }
+
+  /* Hide Login/Register, keep cart */
+  .user-actions a:not(.cart-icon-btn) { display: none; }
+  .cart-icon-btn { padding: 0.4em 0.8em; font-size: 0.88em; }
+
+  /* Hero */
+  .book-slider { height: 280px; }
+  .hero-overlay { padding: 1em; }
+  .hero-overlay h1 { font-size: 1.3rem; margin-bottom: 0.25em; }
+  .hero-overlay p  { font-size: 0.85rem; margin-bottom: 0.7em; }
+  .hero-cta { padding: 0.5em 1.2em; font-size: 0.85rem; }
+  .hero-prev, .hero-next { display: none; }
+
+  /* Icons */
+  .icons-section { padding: 1.6em 0; }
+  .icons-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .icon-card img { max-width: 44px; }
+  .icon-card p { font-size: 0.75em; }
+
+  /* Cards */
+  .card-section { padding: 2em 0 1.2em; }
+  .swiper .card { max-width: 150px; padding: 1em 0.6em 0.8em; }
+  .swiper .card img { width: 76px; height: 110px; }
+  .swiper .card h3 { font-size: 0.82em; }
+  .swiper .card p  { font-size: 0.8em; }
+  .btn-cart, .btn-buy { font-size: 0.7em; padding: 0.38em 0.65em; }
+
+  /* Deals */
+  .deals-section.parallax-bg { min-height: 220px; }
+  .deals-section .overlay { padding: 2em 0; }
+  .deals-grid { flex-direction: column; align-items: center; gap: 14px; }
+  .deal-card { width: 100%; max-width: 320px; padding: 1.8em 1.2em; }
+
+  /* Offers */
+  .offer-section { padding: 2.5em 0 2em; }
+  .offers-grid { grid-template-columns: 1fr; gap: 14px; }
+  .offer-card { padding: 1.8em 1.4em; }
+
+  /* Info */
+  .info-section-wrap { padding: 2em 0 1.5em; }
+  .info-sections { gap: 14px; }
+  .membership, .marketplace-access { padding: 1.4em 1em; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+  .footer-section { padding-top: 1.8em; }
+
+  /* Cart sidebar full width */
+  .cart-sidebar { width: 100vw; right: -100vw; }
+
+  /* Modals */
+  .modal-box { padding: 1.1em 0.9em; border-radius: 10px; max-height: 95vh; }
+  .modal-content { flex-direction: column; align-items: center; }
+  .modal-img { width: 100px; height: 148px; }
+  .modal-info { min-width: unset; width: 100%; }
+  .modal-actions { flex-direction: column; }
+  .modal-actions button { width: 100%; }
+  .success-box button { width: 100%; margin: 0.3em 0 0; }
+}
+
+/* ============================================================
+   XS — 360px and below  (small phone)
+   ============================================================ */
+@media (max-width: 360px) {
+
+  .logo { font-size: 1.05em; }
+
+  .book-slider { height: 240px; }
+  .hero-overlay h1 { font-size: 1.1rem; }
+  .hero-overlay p  { display: none; }
+
+  .icons-grid { gap: 7px; }
+  .icon-card { padding: 0.5em 0.25em; }
+  .icon-card img { max-width: 36px; }
+  .icon-card p { font-size: 0.68em; }
+
+  .swiper .card { max-width: 135px; }
+  .swiper .card img { width: 66px; height: 96px; }
+
+  .footer-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  .checkout-form input { font-size: 0.86em; }
+}

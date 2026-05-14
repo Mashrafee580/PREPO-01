@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
   <link rel="stylesheet" href="https://unpkg.com/swiper@9/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 
 <body>
@@ -253,46 +254,13 @@
   <section id="allBooks" class="card-section">
     <div class="container">
       <h2>All Books</h2>
-      <div class="swiper book-card-slider">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide card" data-id="1">
-            <img src="https://covers.openlibrary.org/b/id/8231856-L.jpg" alt="The Great Gatsby" />
-            <h3>The Great Gatsby</h3>
-            <p>$14.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="1">Add to Cart</button>
-              <button class="btn-buy" data-id="1">Buy Now</button>
-            </div>
-          </div>
-          <div class="swiper-slide card" data-id="2">
-            <img src="https://covers.openlibrary.org/b/id/8091016-L.jpg" alt="To Kill a Mockingbird" />
-            <h3>To Kill a Mockingbird</h3>
-            <p>$12.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="2">Add to Cart</button>
-              <button class="btn-buy" data-id="2">Buy Now</button>
-            </div>
-          </div>
-          <div class="swiper-slide card" data-id="3">
-            <img src="https://covers.openlibrary.org/b/id/8235110-L.jpg" alt="1984" />
-            <h3>1984</h3>
-            <p>$11.49</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="3">Add to Cart</button>
-              <button class="btn-buy" data-id="3">Buy Now</button>
-            </div>
-          </div>
-          <div class="swiper-slide card" data-id="4">
-            <img src="https://covers.openlibrary.org/b/id/8228691-L.jpg" alt="Pride & Prejudice" />
-            <h3>Pride &amp; Prejudice</h3>
-            <p>$9.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="4">Add to Cart</button>
-              <button class="btn-buy" data-id="4">Buy Now</button>
-            </div>
-          </div>
+      <div class="card-slider-wrap">
+        <button class="card-arrow card-arrow-prev book-prev"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="card-arrow card-arrow-next book-next"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="swiper book-card-slider">
+          <div class="swiper-wrapper"></div>
+          <div class="swiper-pagination"></div>
         </div>
-        <div class="swiper-pagination"></div>
       </div>
     </div>
   </section>
@@ -301,37 +269,13 @@
   <section id="newArrivals" class="card-section">
     <div class="container">
       <h2>New Arrivals</h2>
-      <div class="swiper new-arrivals-slider">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide card" data-id="5">
-            <img src="https://covers.openlibrary.org/b/id/8281993-L.jpg" alt="The Silent Patient" />
-            <h3>The Silent Patient</h3>
-            <p>$16.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="5">Add to Cart</button>
-              <button class="btn-buy" data-id="5">Buy Now</button>
-            </div>
-          </div>
-          <div class="swiper-slide card" data-id="6">
-            <img src="https://covers.openlibrary.org/b/id/8250995-L.jpg" alt="Where The Crawdads Sing" />
-            <h3>Where The Crawdads Sing</h3>
-            <p>$13.49</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="6">Add to Cart</button>
-              <button class="btn-buy" data-id="6">Buy Now</button>
-            </div>
-          </div>
-          <div class="swiper-slide card" data-id="7">
-            <img src="https://covers.openlibrary.org/b/id/8226193-L.jpg" alt="The Guest List" />
-            <h3>The Guest List</h3>
-            <p>$15.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="7">Add to Cart</button>
-              <button class="btn-buy" data-id="7">Buy Now</button>
-            </div>
-          </div>
+      <div class="card-slider-wrap">
+        <button class="card-arrow card-arrow-prev arrivals-prev"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="card-arrow card-arrow-next arrivals-next"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="swiper new-arrivals-slider">
+          <div class="swiper-wrapper"></div>
+          <div class="swiper-pagination"></div>
         </div>
-        <div class="swiper-pagination"></div>
       </div>
     </div>
   </section>
@@ -340,28 +284,13 @@
   <section id="latestAdditions" class="card-section">
     <div class="container">
       <h2>Latest Additions</h2>
-      <div class="swiper latest-additions-slider">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide card" data-id="8">
-            <img src="https://covers.openlibrary.org/b/id/8250634-L.jpg" alt="The Midnight Library" />
-            <h3>The Midnight Library</h3>
-            <p>$12.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="8">Add to Cart</button>
-              <button class="btn-buy" data-id="8">Buy Now</button>
-            </div>
-          </div>
-          <div class="swiper-slide card" data-id="9">
-            <img src="https://covers.openlibrary.org/b/id/8255099-L.jpg" alt="Project Hail Mary" />
-            <h3>Project Hail Mary</h3>
-            <p>$17.99</p>
-            <div class="card-btns">
-              <button class="btn-cart" data-id="9">Add to Cart</button>
-              <button class="btn-buy" data-id="9">Buy Now</button>
-            </div>
-          </div>
+      <div class="card-slider-wrap">
+        <button class="card-arrow card-arrow-prev latest-prev"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="card-arrow card-arrow-next latest-next"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="swiper latest-additions-slider">
+          <div class="swiper-wrapper"></div>
+          <div class="swiper-pagination"></div>
         </div>
-        <div class="swiper-pagination"></div>
       </div>
     </div>
   </section>

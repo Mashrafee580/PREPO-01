@@ -471,10 +471,107 @@ function closeOrderSuccess() {
 }
 
 function selectPlan(plan) {
-  var names = { free: "Basic", premium: "Premium", vip: "Ultimate" };
+  if (plan === 'free') {
+    showToast("You're already on the Basic (Free) plan.", "#0074d9");
+    return;
+  }
+
+  const user = API.currentUser();
+  if (!user) {
+    document.getElementById("membershipModal").classList.remove("active");
+    document.body.style.overflow = "";
+    showToast("Please log in to upgrade your plan.", "#e74c3c");
+    setTimeout(() => { window.location.href = "login.html"; }, 1200);
+    return;
+  }
+
+  const plans = {
+    premium: {
+      name: "Premium",
+      price: "$9.99/month",
+      badge: "Most Popular",
+      features: ["Everything in Basic", "10% off all purchases", "Free standard shipping", "Early access to sales", "Priority support"]
+    },
+    vip: {
+      name: "Ultimate",
+      price: "$19.99/month",
+      badge: "VIP",
+      features: ["Everything in Premium", "20% off all purchases", "Free express shipping", "Exclusive book releases", "Personal recommendations", "VIP customer service"]
+    }
+  };
+
+  const p = plans[plan];
+  document.getElementById("payPlanBadge").textContent = p.badge;
+  document.getElementById("payPlanName").textContent = p.name;
+  document.getElementById("payPlanPrice").textContent = p.price;
+  document.getElementById("payPlanFeatures").innerHTML = p.features.map(f =>
+    `<li><span class="check">✓</span> ${f}</li>`
+  ).join("");
+  document.getElementById("paySubmitBtn").setAttribute("data-plan", plan === "vip" ? "ultimate" : plan);
+  document.getElementById("payError").style.display = "none";
+  document.getElementById("paymentForm").reset();
+
   document.getElementById("membershipModal").classList.remove("active");
+  document.getElementById("paymentModal").classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+async function submitPayment() {
+  const name   = document.getElementById("payName").value.trim();
+  const card   = document.getElementById("payCard").value.replace(/\s/g, "");
+  const expiry = document.getElementById("payExpiry").value.trim();
+  const cvv    = document.getElementById("payCvv").value.trim();
+  const errEl  = document.getElementById("payError");
+  const btn    = document.getElementById("paySubmitBtn");
+  const plan   = btn.getAttribute("data-plan");
+
+  errEl.style.display = "none";
+
+  if (!name || !card || !expiry || !cvv) {
+    errEl.textContent = "Please fill in all payment fields.";
+    errEl.style.display = "block";
+    return;
+  }
+  if (!/^\d{16}$/.test(card)) {
+    errEl.textContent = "Enter a valid 16-digit card number.";
+    errEl.style.display = "block";
+    return;
+  }
+  if (!/^\d{2}\s?\/\s?\d{2}$/.test(expiry)) {
+    errEl.textContent = "Enter expiry as MM / YY.";
+    errEl.style.display = "block";
+    return;
+  }
+  if (!/^\d{3,4}$/.test(cvv)) {
+    errEl.textContent = "Enter a valid CVV.";
+    errEl.style.display = "block";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Processing…";
+
+  const res = await API.subscribe(plan);
+
+  btn.disabled = false;
+  btn.textContent = "Confirm & Activate";
+
+  if (!res.success) {
+    errEl.textContent = res.message || "Payment failed. Please try again.";
+    errEl.style.display = "block";
+    return;
+  }
+
+  // Update stored user plan
+  const user = API.currentUser();
+  if (user) {
+    user.plan = plan;
+    localStorage.setItem("pt_user", JSON.stringify(user));
+  }
+
+  document.getElementById("paymentModal").classList.remove("active");
   document.body.style.overflow = "";
-  showToast("You selected the " + names[plan] + " plan! 🎉", "#0074d9");
+  showToast("🎉 You're now on the " + plan.charAt(0).toUpperCase() + plan.slice(1) + " plan!", "#0074d9");
 }
 
 function handleSearch() {
@@ -568,6 +665,28 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.body.style.overflow = "";
       }
     });
+
+  // Payment modal
+  document.getElementById("paymentModalClose").addEventListener("click", function () {
+    document.getElementById("paymentModal").classList.remove("active");
+    document.body.style.overflow = "";
+  });
+  document.getElementById("paymentModal").addEventListener("click", function (e) {
+    if (e.target === this) {
+      this.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+  });
+
+  // Card number auto-format
+  document.getElementById("payCard").addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim().slice(0, 19);
+  });
+  document.getElementById("payExpiry").addEventListener("input", function () {
+    let v = this.value.replace(/\D/g, "");
+    if (v.length >= 3) v = v.slice(0,2) + " / " + v.slice(2,4);
+    this.value = v;
+  });
 
   document.addEventListener("click", function (e) {
     if (

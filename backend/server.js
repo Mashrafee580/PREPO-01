@@ -78,8 +78,8 @@ app.post("/api/auth/register", async (req, res) => {
       [userId]
     );
 
-    const token = jwt.sign({ id: userId, email }, JWT_SECRET, { expiresIn: "7d" });
-    return ok(res, { token, user: { id: userId, name, email, plan: "free" } }, 201);
+    const token = jwt.sign({ id: userId, email, role: "user" }, JWT_SECRET, { expiresIn: "7d" });
+    return ok(res, { token, user: { id: userId, name, email, plan: "free", role: "user" } }, 201);
   } catch (err) {
     console.error(err);
     return fail(res, "Server error", 500);
@@ -97,10 +97,10 @@ app.post("/api/auth/login", async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password)))
       return fail(res, "Invalid email or password", 401);
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
     return ok(res, {
       token,
-      user: { id: user.id, name: user.name, email: user.email, plan: user.plan }
+      user: { id: user.id, name: user.name, email: user.email, plan: user.plan, role: user.role }
     });
   } catch (err) {
     console.error(err);
@@ -343,6 +343,133 @@ app.get("/api/membership/:userId", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  ADMIN  (JWT required + role=admin check)
+// ─────────────────────────────────────────────
+
+function adminAuth(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header) return fail(res, "No token provided", 401);
+  try {
+    const decoded = jwt.verify(header.split(" ")[1], JWT_SECRET);
+    if (decoded.role !== "admin") return fail(res, "Admin access required", 403);
+    req.user = decoded;
+    next();
+  } catch {
+    return fail(res, "Invalid or expired token", 401);
+  }
+}
+
+// GET /api/admin/stats
+app.get("/api/admin/stats", adminAuth, async (req, res) => {
+  try {
+    const [[{ users }]]    = await pool.execute("SELECT COUNT(*) AS users FROM users");
+    const [[{ orders }]]   = await pool.execute("SELECT COUNT(*) AS orders FROM orders");
+    const [[{ books }]]    = await pool.execute("SELECT COUNT(*) AS books FROM books");
+    const [[{ listings }]] = await pool.execute("SELECT COUNT(*) AS listings FROM marketplace_listings WHERE active=1");
+    const [[{ paid }]]     = await pool.execute("SELECT COUNT(*) AS paid FROM memberships WHERE active=1 AND plan != 'free'");
+    return ok(res, { users, orders, books, listings, paid });
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// GET /api/admin/users
+app.get("/api/admin/users", adminAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.execute(
+      "SELECT id, name, email, plan, role, created_at FROM users ORDER BY created_at DESC"
+    );
+    return ok(res, rows);
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// PATCH /api/admin/users/:id/role  — promote/demote
+app.patch("/api/admin/users/:id/role", adminAuth, async (req, res) => {
+  const { role } = req.body;
+  if (!["admin", "user"].includes(role)) return fail(res, "Invalid role");
+  try {
+    await pool.execute("UPDATE users SET role = ? WHERE id = ?", [role, req.params.id]);
+    return ok(res, { message: "Role updated" });
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// DELETE /api/admin/users/:id
+app.delete("/api/admin/users/:id", adminAuth, async (req, res) => {
+  try {
+    await pool.execute("DELETE FROM users WHERE id = ?", [req.params.id]);
+    return ok(res, { message: "User deleted" });
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// GET /api/admin/orders
+app.get("/api/admin/orders", adminAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.execute("SELECT * FROM orders ORDER BY created_at DESC");
+    return ok(res, rows);
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// PATCH /api/admin/orders/:id/status
+app.patch("/api/admin/orders/:id/status", adminAuth, async (req, res) => {
+  const { status } = req.body;
+  const valid = ["pending","confirmed","shipped","delivered"];
+  if (!valid.includes(status)) return fail(res, "Invalid status");
+  try {
+    await pool.execute("UPDATE orders SET status = ? WHERE id = ?", [status, req.params.id]);
+    return ok(res, { message: "Status updated" });
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// GET /api/admin/books
+app.get("/api/admin/books", adminAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.execute("SELECT * FROM books ORDER BY created_at DESC");
+    return ok(res, rows);
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// GET /api/admin/marketplace
+app.get("/api/admin/marketplace", adminAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.execute("SELECT * FROM marketplace_listings ORDER BY created_at DESC");
+    return ok(res, rows);
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// DELETE /api/admin/marketplace/:id  (hard delete)
+app.delete("/api/admin/marketplace/:id", adminAuth, async (req, res) => {
+  try {
+    await pool.execute("DELETE FROM marketplace_listings WHERE id = ?", [req.params.id]);
+    return ok(res, { message: "Listing deleted" });
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// GET /api/admin/messages
+app.get("/api/admin/messages", adminAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT mm.*, ml.title AS listing_title
+      FROM marketplace_messages mm
+      LEFT JOIN marketplace_listings ml ON mm.listing_id = ml.id
+      ORDER BY mm.created_at DESC
+    `);
+    return ok(res, rows);
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// GET /api/admin/memberships
+app.get("/api/admin/memberships", adminAuth, async (req, res) => {
+  try {
+    const [rows] = await pool.execute(`
+      SELECT m.id, u.name, u.email, m.plan, m.price, m.started_at
+      FROM memberships m
+      JOIN users u ON m.user_id = u.id
+      WHERE m.active = 1
+      ORDER BY m.started_at DESC
+    `);
+    return ok(res, rows);
+  } catch (err) { console.error(err); return fail(res, "Server error", 500); }
+});
+
+// ─────────────────────────────────────────────
 //  HEALTH CHECK
 // ─────────────────────────────────────────────
 app.get("/api/health", async (_, res) => {
@@ -351,6 +478,29 @@ app.get("/api/health", async (_, res) => {
     return ok(res, { status: "ok", db: "mysql", time: new Date().toISOString() });
   } catch {
     return fail(res, "Database unreachable", 503);
+  }
+});
+
+// One-time: promote a user to admin by email (only works if zero admins exist)
+// POST /api/make-admin  { email, secret }
+app.post("/api/make-admin", async (req, res) => {
+  const { email, secret } = req.body;
+  if (secret !== (process.env.ADMIN_SECRET || "papertrail_admin_setup")) {
+    return fail(res, "Invalid secret", 403);
+  }
+  try {
+    const [[{ count }]] = await pool.execute(
+      "SELECT COUNT(*) AS count FROM users WHERE role = 'admin'"
+    );
+    if (count > 0) return fail(res, "Admin already exists. Use the panel to manage roles.", 403);
+    const [result] = await pool.execute(
+      "UPDATE users SET role = 'admin' WHERE email = ?", [email]
+    );
+    if (!result.affectedRows) return fail(res, "User not found");
+    return ok(res, { message: `${email} is now an admin` });
+  } catch (err) {
+    console.error(err);
+    return fail(res, "Server error", 500);
   }
 });
 

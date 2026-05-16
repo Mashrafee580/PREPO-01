@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "seed": "node seed.js",
+    "make-admin": "node make-admin.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {

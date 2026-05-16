@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login — PaperTrail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="auth.css" />
+</head>
+
+<body class="auth-body">
+
+    <div id="toast" class="toast"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <a href="index.html" class="auth-logo">PaperTrail</a>
+            <h2>Welcome back</h2>
+            <p class="auth-sub">Sign in to your account</p>
+
+            <form id="loginForm" class="auth-form" onsubmit="return false;">
+                <div class="auth-field">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@email.com" autocomplete="email" required />
+                </div>
+                <div class="auth-field">
+                    <label for="loginPassword">Password</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="loginPassword" placeholder="Your password"
+                            autocomplete="current-password" required />
+                        <button type="button" class="pw-toggle" onclick="togglePw('loginPassword', this)">👁</button>
+                    </div>
+                </div>
+                <div id="loginError" class="auth-error" style="display:none;"></div>
+                <button type="button" class="auth-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+            </form>
+
+            <p class="auth-switch">Don't have an account? <a href="register.html">Register</a></p>
+        </div>
+
+        <div class="auth-side">
+            <div class="auth-side-content">
+                <h1>Every page leads somewhere new</h1>
+                <p>Thousands of books, exclusive deals, and a community of readers waiting for you.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="backend/api.js"></script>
+    <script src="auth.js"></script>
+</body>
+
+</html>

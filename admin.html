@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin — PaperTrail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+</head>
+
+<body class="admin-body">
+
+    <div id="toast" class="toast"></div>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-logo">PaperTrail</div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active" data-tab="dashboard" onclick="switchTab('dashboard',this)">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+            <a href="#" class="sidebar-link" data-tab="users" onclick="switchTab('users',this)">
+                <i class="fa-solid fa-users"></i> Users
+            </a>
+            <a href="#" class="sidebar-link" data-tab="orders" onclick="switchTab('orders',this)">
+                <i class="fa-solid fa-bag-shopping"></i> Orders
+            </a>
+            <a href="#" class="sidebar-link" data-tab="books" onclick="switchTab('books',this)">
+                <i class="fa-solid fa-book"></i> Books
+            </a>
+            <a href="#" class="sidebar-link" data-tab="marketplace" onclick="switchTab('marketplace',this)">
+                <i class="fa-solid fa-store"></i> Marketplace
+            </a>
+            <a href="#" class="sidebar-link" data-tab="messages" onclick="switchTab('messages',this)">
+                <i class="fa-solid fa-envelope"></i> Messages
+            </a>
+            <a href="#" class="sidebar-link" data-tab="memberships" onclick="switchTab('memberships',this)">
+                <i class="fa-solid fa-crown"></i> Memberships
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="sidebar-logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i>
+                Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="admin-main">
+        <!-- Top bar -->
+        <header class="admin-topbar">
+            <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+            <h1 id="adminPageTitle">Dashboard</h1>
+            <div class="admin-user-info" id="adminUserInfo"></div>
+        </header>
+
+        <!-- Dashboard Tab -->
+        <section class="admin-tab active" id="tab-dashboard">
+            <div class="stat-cards" id="statCards">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-body"><span id="statUsers">—</span>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fa-solid fa-bag-shopping"></i></div>
+                    <div class="stat-body"><span id="statOrders">—</span>
+                        <p>Total Orders</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-book"></i></div>
+                    <div class="stat-body"><span id="statBooks">—</span>
+                        <p>Books in Catalog</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fa-solid fa-store"></i></div>
+                    <div class="stat-body"><span id="statListings">—</span>
+                        <p>Marketplace Listings</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fff4e0;color:#c85000;"><i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div class="stat-body"><span id="statPaid">—</span>
+                        <p>Paid Members</p>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-section">
+                <h3>Recent Orders</h3>
+                <div class="admin-table-wrap">
+                    <table class="admin-table" id="recentOrdersTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrdersBody">
+                            <tr>
+                                <td colspan="5" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Tab -->
+        <section class="admin-tab" id="tab-users">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>All Users</h3>
+                    <input type="text" class="admin-search" id="userSearch" placeholder="Search by name or email…"
+                        oninput="filterTable('usersBody', this.value, [0,1])" />
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Plan</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersBody">
+                            <tr>
+                                <td colspan="6" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders Tab -->
+        <section class="admin-tab" id="tab-orders">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>All Orders</h3>
+                    <input type="text" class="admin-search" id="orderSearch" placeholder="Search by name or email…"
+                        oninput="filterTable('ordersBody', this.value, [1,2])" />
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Total</th>
+                                <th>Delivery</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersBody">
+                            <tr>
+                                <td colspan="8" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Books Tab -->
+        <section class="admin-tab" id="tab-books">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>Book Catalog</h3>
+                    <input type="text" class="admin-search" placeholder="Search books…"
+                        oninput="filterTable('booksBody', this.value, [0,1])" />
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Genre</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Added</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksBody">
+                            <tr>
+                                <td colspan="6" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Marketplace Tab -->
+        <section class="admin-tab" id="tab-marketplace">
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>Marketplace Listings</h3>
+                    <input type="text" class="admin-search" placeholder="Search listings…"
+                        oninput="filterTable('mpBody', this.value, [0,1,5])" />
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Type</th>
+                                <th>Condition</th>
+                                <th>Price</th>
+                                <th>Seller</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mpBody">
+                            <tr>
+                                <td colspan="8" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Messages Tab -->
+        <section class="admin-tab" id="tab-messages">
+            <div class="admin-section">
+                <h3>Marketplace Messages</h3>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>Email</th>
+                                <th>Listing</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messagesBody">
+                            <tr>
+                                <td colspan="5" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memberships Tab -->
+        <section class="admin-tab" id="tab-memberships">
+            <div class="stat-cards" style="margin-bottom:1.5em;">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-user"></i></div>
+                    <div class="stat-body"><span id="mStatFree">—</span>
+                        <p>Free</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e8f4ff;color:#0055b3;"><i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="stat-body"><span id="mStatPremium">—</span>
+                        <p>Premium</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fff4e0;color:#c85000;"><i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div class="stat-body"><span id="mStatUltimate">—</span>
+                        <p>Ultimate</p>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-section">
+                <div class="section-header">
+                    <h3>All Memberships</h3>
+                    <input type="text" class="admin-search" placeholder="Search by name or email…"
+                        oninput="filterTable('membershipsBody', this.value, [0,1])" />
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Plan</th>
+                                <th>Price</th>
+                                <th>Since</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membershipsBody">
+                            <tr>
+                                <td colspan="5" class="loading-row">Loading…</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderModal" class="modal-overlay">
+        <div class="modal-box" style="max-width:600px;">
+            <button class="modal-close" onclick="closeModal('orderModal')">&times;</button>
+            <h2 style="margin-bottom:1em;color:#0a2a50;">Order Details</h2>
+            <div id="orderModalContent"></div>
+        </div>
+    </div>
+
+    <script src="backend/api.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

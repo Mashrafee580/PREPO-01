@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register — PaperTrail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="auth.css" />
+</head>
+
+<body class="auth-body">
+
+    <div id="toast" class="toast"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <a href="index.html" class="auth-logo">PaperTrail</a>
+            <h2>Create account</h2>
+            <p class="auth-sub">Join thousands of readers today</p>
+
+            <form id="registerForm" class="auth-form" onsubmit="return false;">
+                <div class="auth-field">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" placeholder="Your full name" autocomplete="name" required />
+                </div>
+                <div class="auth-field">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" placeholder="you@email.com" autocomplete="email" required />
+                </div>
+                <div class="auth-field">
+                    <label for="regPassword">Password</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="regPassword" placeholder="Min. 6 characters"
+                            autocomplete="new-password" required />
+                        <button type="button" class="pw-toggle" onclick="togglePw('regPassword', this)">👁</button>
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label for="regConfirm">Confirm Password</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="regConfirm" placeholder="Repeat password" autocomplete="new-password"
+                            required />
+                        <button type="button" class="pw-toggle" onclick="togglePw('regConfirm', this)">👁</button>
+                    </div>
+                </div>
+                <div id="regError" class="auth-error" style="display:none;"></div>
+                <button type="button" class="auth-btn" id="regBtn" onclick="doRegister()">Create Account</button>
+            </form>
+
+            <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+        </div>
+
+        <div class="auth-side">
+            <div class="auth-side-content">
+                <h1>Your next favourite book is waiting</h1>
+                <p>Sign up free and get access to exclusive deals, early arrivals, and the PaperTrail marketplace.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="backend/api.js"></script>
+    <script src="auth.js"></script>
+</body>
+
+</html>

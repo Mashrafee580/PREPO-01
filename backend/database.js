@@ -36,6 +36,7 @@ async function createSchema() {
         email      VARCHAR(180) NOT NULL UNIQUE,
         password   VARCHAR(255) NOT NULL,
         plan       ENUM('free','premium','ultimate') NOT NULL DEFAULT 'free',
+        role       ENUM('user','admin') NOT NULL DEFAULT 'user',
         created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
@@ -135,6 +136,14 @@ async function createSchema() {
     `);
 
     console.log("✅  MySQL schema ready");
+
+    // Add role column if it doesn't exist (migration for existing DBs)
+    try {
+      await conn.execute("ALTER TABLE users ADD COLUMN role ENUM('user','admin') NOT NULL DEFAULT 'user'");
+      console.log("✅  Added role column to users");
+    } catch (e) {
+      // Column already exists — ignore
+    }
   } finally {
     conn.release();
   }

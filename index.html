@@ -5,6 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PaperTrail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
   <link rel="stylesheet" href="https://unpkg.com/swiper@9/swiper-bundle.min.css" />
@@ -26,18 +31,18 @@
         <input type="text" id="searchInput" placeholder="Search books, authors..." autocomplete="off" />
         <button type="submit" onclick="handleSearch()">Search</button>
       </form>
-      <div class="user-actions">
-        <a href="#">Login</a>
-        <a href="#">Register</a>
+      <div class="user-actions" id="userActions">
+        <a href="login.html" id="headerLogin">Login</a>
+        <a href="register.html" id="headerRegister">Register</a>
         <a href="#" id="cartBtn" class="cart-icon-btn">
           🛒 Cart <span id="cartCount" class="cart-count">0</span>
         </a>
       </div>
     </div>
     <nav class="bottom-navbar" id="navbar">
-      <div class="container navbar-inner">
+      <div class="container navbar-inner" style="padding-top: 10px; padding-bottom: 10px; ;">
         <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">&#9776;</button>
-        <ul id="navMenu">
+        <ul id="navMenu" style="display: flex; justify-content: center;">
           <li><a href="#home">Home</a></li>
           <li><a href="#allBooks">All Books</a></li>
           <li><a href="#newArrivals">New Arrivals</a></li>
@@ -128,6 +133,48 @@
       <p>You will receive a confirmation email shortly.</p>
       <button id="continueShopping">Continue Shopping</button>
       <button id="orderSuccessClose" class="modal-close-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Payment / Upgrade Modal -->
+  <div id="paymentModal" class="modal-overlay">
+    <div class="modal-box payment-modal-box">
+      <button class="modal-close" id="paymentModalClose">&times;</button>
+      <div class="payment-modal-left">
+        <div class="payment-plan-badge" id="payPlanBadge"></div>
+        <h2 id="payPlanName"></h2>
+        <div class="payment-plan-price" id="payPlanPrice"></div>
+        <ul class="payment-plan-features" id="payPlanFeatures"></ul>
+      </div>
+      <div class="payment-modal-right">
+        <h3>Payment Details</h3>
+        <p class="payment-sub">Enter your card info to activate your plan</p>
+        <form id="paymentForm" class="payment-form" onsubmit="return false;">
+          <div class="pay-field">
+            <label>Cardholder Name</label>
+            <input type="text" id="payName" placeholder="Name on card" required />
+          </div>
+          <div class="pay-field">
+            <label>Card Number</label>
+            <input type="text" id="payCard" placeholder="1234 5678 9012 3456" maxlength="19" required />
+          </div>
+          <div class="pay-row">
+            <div class="pay-field">
+              <label>Expiry</label>
+              <input type="text" id="payExpiry" placeholder="MM / YY" maxlength="7" required />
+            </div>
+            <div class="pay-field">
+              <label>CVV</label>
+              <input type="text" id="payCvv" placeholder="123" maxlength="4" required />
+            </div>
+          </div>
+          <div id="payError" class="auth-error" style="display:none;"></div>
+          <button type="button" class="auth-btn" id="paySubmitBtn" onclick="submitPayment()">
+            Confirm & Activate
+          </button>
+        </form>
+        <p class="payment-secure">🔒 Secure &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No hidden fees</p>
+      </div>
     </div>
   </div>
 
@@ -397,6 +444,7 @@
   <!-- Scripts -->
   <script src="https://unpkg.com/swiper@9/swiper-bundle.min.js"></script>
   <script src="backend/api.js"></script>
+  <script src="header-auth.js"></script>
   <script src="script.js"></script>
 </body>
 

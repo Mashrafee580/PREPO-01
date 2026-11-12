@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "PaperTrail",
+    "slug": "papertrail",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "papertrail",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1f36"
+    },
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.papertrail.app" },
+    "android": { "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#1a1f36" }, "package": "com.papertrail.app" },
+    "web": { "bundler": "metro", "output": "static", "favicon": "./assets/favicon.png" },
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": false }
+  }
+}
